@@ -17,7 +17,7 @@ public class Request {
     private String uid;
     @NotNull
     private String operationUid;
-    private String systemName;
+    private System systemName;
     @NotNull
     private String systemTime;
     @NotNull
@@ -25,4 +25,18 @@ public class Request {
     private int templateId;
     private int productCode;
     private int smsCode;
+
+    @Override
+    public String toString(){
+        return "{" +
+                "uid='" + uid +'\'' +
+                ", operationUid='" + operationUid + '\'' +
+                ", systemName='" + systemName + '\'' +
+                ", systemTime='" + systemTime + '\'' +
+                ", communicationId='" + communicationId + '\'' +
+                ", templateID='" + templateId + '\'' +
+                ", productCode='" + productCode + '\'' +
+                ", smsCode='" + smsCode + '\'' +
+                '}';
+    }
 }

@@ -6,13 +6,15 @@ import ru.munirov.MySecondTestAppSpringBoot.exception.UnsupportedCodeException;
 import ru.munirov.MySecondTestAppSpringBoot.exception.ValidationFailedException;
 import ru.munirov.MySecondTestAppSpringBoot.model.Response;
 
+import java.util.Objects;
+
 @Service
 public class RequestValidationService implements ValidationService {
     @Override
     public void isValid(BindingResult bindingResult) throws ValidationFailedException{
         if (bindingResult.hasErrors()){
             throw new
-                    ValidationFailedException(bindingResult.getFieldError().toString());
+                    ValidationFailedException(Objects.requireNonNull(bindingResult.getFieldError()).toString());
         }
     }
 
