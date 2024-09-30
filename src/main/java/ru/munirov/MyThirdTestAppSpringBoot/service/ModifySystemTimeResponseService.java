@@ -1,10 +1,9 @@
-package ru.munirov.MySecondTestAppSpringBoot.service;
+package ru.munirov.MyThirdTestAppSpringBoot.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.munirov.MySecondTestAppSpringBoot.model.Response;
-import ru.munirov.MySecondTestAppSpringBoot.util.DateTimeUtil;
+import ru.munirov.MyThirdTestAppSpringBoot.model.Response;
+import ru.munirov.MyThirdTestAppSpringBoot.util.DateTimeUtil;
 
 import java.util.Date;
 

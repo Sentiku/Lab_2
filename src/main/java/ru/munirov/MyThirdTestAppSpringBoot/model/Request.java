@@ -1,4 +1,4 @@
-package ru.munirov.MySecondTestAppSpringBoot.model;
+package ru.munirov.MyThirdTestAppSpringBoot.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,9 +17,10 @@ public class Request {
     private String uid;
     @NotNull
     private String operationUid;
-    private System systemName;
+    private String systemName;
     @NotNull
     private String systemTime;
+    private String source;
     @NotNull
     private int communicationId;
     private int templateId;
@@ -33,6 +34,7 @@ public class Request {
                 ", operationUid='" + operationUid + '\'' +
                 ", systemName='" + systemName + '\'' +
                 ", systemTime='" + systemTime + '\'' +
+                ", source='" + source + '\'' +
                 ", communicationId='" + communicationId + '\'' +
                 ", templateID='" + templateId + '\'' +
                 ", productCode='" + productCode + '\'' +

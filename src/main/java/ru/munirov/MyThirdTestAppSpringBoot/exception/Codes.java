@@ -1,4 +1,4 @@
-package ru.munirov.MySecondTestAppSpringBoot.exception;
+package ru.munirov.MyThirdTestAppSpringBoot.exception;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

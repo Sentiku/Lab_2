@@ -1,27 +1,35 @@
-package ru.munirov.MySecondTestAppSpringBoot.controller;
+package ru.munirov.MyThirdTestAppSpringBoot.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.munirov.MySecondTestAppSpringBoot.exception.*;
-import ru.munirov.MySecondTestAppSpringBoot.model.Request;
-import ru.munirov.MySecondTestAppSpringBoot.model.Response;
-import ru.munirov.MySecondTestAppSpringBoot.service.ValidationService;
-import ru.munirov.MySecondTestAppSpringBoot.util.DateTimeUtil;
+import ru.munirov.MyThirdTestAppSpringBoot.exception.*;
+import ru.munirov.MyThirdTestAppSpringBoot.model.Request;
+import ru.munirov.MyThirdTestAppSpringBoot.model.Response;
+import ru.munirov.MyThirdTestAppSpringBoot.service.ModifyResponseService;
+import ru.munirov.MyThirdTestAppSpringBoot.service.ValidationService;
+import ru.munirov.MyThirdTestAppSpringBoot.util.DateTimeUtil;
 
 import java.util.Date;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
 public class MyController {
     private final ValidationService validationService;
+    private final ModifyResponseService modifyResponseService;
+    @Autowired
+    public MyController(ValidationService validationService, @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService) {
+        this.validationService = validationService;
+        this.modifyResponseService = modifyResponseService;
+    }
 
     @PostMapping(value = "/feedback")
     public ResponseEntity <Response> feedback(@Valid @RequestBody Request request, BindingResult bindingResult){
@@ -70,6 +78,7 @@ public class MyController {
         if (response.getUid().length() < 33 & response.getOperationUid().length() < 33 & 1 < request.getCommunicationId() & request.getCommunicationId() < 100000){
             log.info("Code status: {}", Codes.SUCCESS);
             log.info("Response: {}", response);
+            modifyResponseService.modify(response);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             response.setCode(Codes.FAILED);
@@ -79,6 +88,7 @@ public class MyController {
             log.error("Error code: {}", ErrorCodes.OUT_OF_RANGE);
             log.error("Error message: {}", ErrorMessages.RANGE);
             log.info("Response: {}", response);
+            modifyResponseService.modify(response);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
