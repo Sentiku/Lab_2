@@ -1,7 +1,6 @@
 package ru.munirov.MyThirdTestAppSpringBoot.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.munirov.MyThirdTestAppSpringBoot.exception.*;
 import ru.munirov.MyThirdTestAppSpringBoot.model.Request;
 import ru.munirov.MyThirdTestAppSpringBoot.model.Response;
-import ru.munirov.MyThirdTestAppSpringBoot.service.ModifyResponseService;
-import ru.munirov.MyThirdTestAppSpringBoot.service.ValidationService;
+import ru.munirov.MyThirdTestAppSpringBoot.service.*;
 import ru.munirov.MyThirdTestAppSpringBoot.util.DateTimeUtil;
 
+import java.text.ParseException;
 import java.util.Date;
 
 @Slf4j
@@ -25,55 +24,29 @@ import java.util.Date;
 public class MyController {
     private final ValidationService validationService;
     private final ModifyResponseService modifyResponseService;
+    private final CheckUidService checkUidService;
     @Autowired
-    public MyController(ValidationService validationService, @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService) {
+    public MyController(CheckUidService checkUidService, ValidationService validationService, @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService) {
         this.validationService = validationService;
         this.modifyResponseService = modifyResponseService;
+        this.checkUidService = checkUidService;
     }
 
     @PostMapping(value = "/feedback")
-    public ResponseEntity <Response> feedback(@Valid @RequestBody Request request, BindingResult bindingResult){
+    public ResponseEntity <Response> feedback(@Valid @RequestBody Request request, BindingResult bindingResult) throws ParseException {
 
         log.info("request: {}", request);
-        Response response = Response.builder()
-                .uid(request.getUid())
-                .operationUid(request.getOperationUid())
-                .systemTime(DateTimeUtil.getCustomFormat().format(new Date()))
-                .code(Codes.SUCCESS)
-                .errorCode(ErrorCodes.EMPTY)
-                .errorMessage(ErrorMessages.EMPTY)
-                .build();
+        Response response = ResponseBuilderService.buildResponse(request);
         log.info("System time success set: {}", response.getSystemTime());
         try{
             validationService.isValid(bindingResult);
-            validationService.UCException(response);
+            checkUidService.isChecked(request);
         } catch (ValidationFailedException e){
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.VALIDATION_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.VALIDATION);
-            log.error("Code status: {}", Codes.FAILED);
-            log.error("Error code: {}", ErrorCodes.VALIDATION_EXCEPTION);
-            log.error("Error message: {}", ErrorMessages.VALIDATION);
-            log.info("Response: {}", response);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return ErrorCatcherService.handleValidationException(response, e);
         } catch (Exception e){
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.UNKNOWN_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.UNKNOWN);
-            log.error("Code status: {}", Codes.FAILED);
-            log.error("Error code: {}", ErrorCodes.UNKNOWN_EXCEPTION);
-            log.error("Error message: {}", ErrorMessages.UNKNOWN);
-            log.info("Response: {}", response);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ErrorCatcherService.handleUnknownException(response, e);
         } catch (UnsupportedCodeException e){
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.UNSUPPORTED_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.UNSUPPORTED);
-            log.error("Code status: {}", Codes.FAILED);
-            log.error("Error code: {}", ErrorCodes.UNSUPPORTED_EXCEPTION);
-            log.error("Error message: {}", ErrorMessages.UNSUPPORTED);
-            log.info("Response: {}", response);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ErrorCatcherService.handleUnsupportedCodeException(response, e);
         }
         if (response.getUid().length() < 33 & response.getOperationUid().length() < 33 & 1 < request.getCommunicationId() & request.getCommunicationId() < 100000){
             log.info("Code status: {}", Codes.SUCCESS);

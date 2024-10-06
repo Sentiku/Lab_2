@@ -9,7 +9,7 @@ import ru.munirov.MyThirdTestAppSpringBoot.model.Response;
 import java.util.Objects;
 
 @Service
-public class RequestValidationService implements ValidationService {
+public class ValidationServiceImpl implements ValidationService {
     @Override
     public void isValid(BindingResult bindingResult) throws ValidationFailedException{
         if (bindingResult.hasErrors()){
@@ -18,10 +18,10 @@ public class RequestValidationService implements ValidationService {
         }
     }
 
-    @Override
-    public void UCException(Response response) throws UnsupportedCodeException {
-        if (response.getUid().equals("123")){
-            throw new UnsupportedCodeException("Неподдерживаемый uid");
-        }
+//    @Override
+//    public void UCException(Response response) throws UnsupportedCodeException {
+//        if (response.getUid().equals("123")){
+//            throw new UnsupportedCodeException("Неподдерживаемый uid");
+//        }
     }
-}
+//}
